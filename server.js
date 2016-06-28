@@ -1,22 +1,33 @@
 const request = require('request');
 const async = require('async');
+const baseUrl = 'https://www.eventbriteapi.com/v3';
+const EVENTBRITE_TOKEN = process.env.EVENTBRITE_TOKEN;
 
-var url = `https://www.eventbriteapi.com/v3/events/search/?q=hackathons&location.address=sanfrancisco&location.within=50mi&sort_by=date&token=${process.env.EVENTBRITE_TOKEN}`;
+let params = {
+  address: 'sanfrancisco',
+  query: 'hackathons',
+  withIn: '50mi',
+  sort: 'date'
+};
+
+function getOptions(url) {
+  return {
+    url: `${baseUrl}${url}token=${EVENTBRITE_TOKEN}`,
+    json:true
+  };
+}
 
 async.waterfall([
     (waterCb) => {
-      var requestOptions = {
-        url: url,
-        json:true
-      };
+    //Get events
+    var url = `/events/search/?q=${params.query}&location.address=${params.address}&location.within=${params.withIn}&sort_by=${params.sort}&`;
 
-    request(requestOptions, (err, res, body) => {
+    request(getOptions(url), (err, res, body) => {
       var events = [];
 
       if (err) {
         return waterCb(err);
       }
-
       events = body.events.map((event) => {
         return {
           id: event.id,
@@ -34,13 +45,11 @@ async.waterfall([
     });
     },
     (events, waterCb) => {
+      //Get venue information for each event
       async.forEach(events, (event, eachCb) => {
-        var requestOptions = {
-          url: `https://www.eventbriteapi.com/v3/venues/${event.venue_id}/?token=${process.env.EVENTBRITE_TOKEN}`,
-          json: true
-        };
+        var url = `/venues/${event.venue_id}/?`;
 
-        request(requestOptions, (err, res, body) => {
+        request(getOptions(url), (err, res, body) => {
           if (err) {
             return eachCb(err);
           }
@@ -66,13 +75,11 @@ async.waterfall([
         });
     },
     (events, waterCb) => {
+      // Get ticket information for each event
       async.forEach(events, (event, eachCb) => {
-        var requestOptions = {
-          url: `https://www.eventbriteapi.com/v3/events/${event.id}/ticket_classes/?token=${process.env.EVENTBRITE_TOKEN}`,
-          json: true
-        };
+        var url = `/events/${event.id}/ticket_classes/?`;
 
-        request(requestOptions, (err, res, body) => {
+        request(getOptions(url), (err, res, body) => {
           if (err) {
             return eachCb(err);
           }
