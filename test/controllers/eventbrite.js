@@ -90,54 +90,23 @@ describe('getVenues', function() {
 
   it('should return events', function (done) {
     var event = { name: 'Westfield Mall',
-  address_1: '123 San Francisco St.',
-  address_2: 'Suite 150',
-  city: 'San Francisco',
-  region: 'CA',
-  postal_code: '94102',
-  notThis: 'do not include' };
+      address_1: '123 San Francisco St.',
+      address_2: 'Suite 150',
+      city: 'San Francisco',
+      region: 'CA',
+      postal_code: '94102',
+      notThis: 'do not include' };
 
     var expect = { name: 'Westfield Mall',
-  address_1: '123 San Francisco St.',
-  address_2: 'Suite 150',
-  city: 'San Francisco',
-  region: 'CA',
-  postal_code: '94102' };
+      address_1: '123 San Francisco St.',
+      address_2: 'Suite 150',
+      city: 'San Francisco',
+      region: 'CA',
+      postal_code: '94102' };
 
     eventbrite.getVenuesApi('www.test.com', event, (err, res) => {
-      // console.log('res ', res);
       assert.deepEqual(res, expect);
       done();
     });
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

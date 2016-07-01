@@ -7,50 +7,6 @@ exports.getEvents = getEvents;
 exports.getEventsApi = getEventsApi;
 exports.getVenuesApi = getVenuesApi;
 
-function getEventsApi(url, cb) {
-  request.get(getOptions(url), (err, res, body) => {
-    let events = [];
-
-    if (err) {
-      return cb(err);
-    }
-
-    events = body.events.map((event) => {
-      return {
-        id: event.id,
-        name: event.name.text,
-        url: event.url,
-        description: event.description,
-        start: event.start.local,
-        end: event.end.local,
-        currency: event.currency,
-        venue_id: event.venue_id
-      };
-    });
-
-    return cb(null, events);
-  });
-}
-
-function getVenuesApi(url, event, cb) {
-  return request.get(getOptions(url), (err, res, body) => {
-    if (err) {
-      return cb(err);
-    }
-
-    event.venue = {
-      name: body.name,
-      address_1: body.address.address_1,
-      address_2: body.address.address_2,
-      city: body.address.city,
-      region: body.address.region,
-      postal_code: body.address.postal_code
-    };
-
-    cb(null, event.venue);
-  });
-}
-
 function getEvents(params, callback) {
   params = {
     address: params.address || 'sanfrancisco',
@@ -108,6 +64,50 @@ function getEvents(params, callback) {
         });
       }], function (err, events) {
       callback(null, events);
+  });
+}
+
+function getEventsApi(url, cb) {
+  request.get(getOptions(url), (err, res, body) => {
+    let events = [];
+
+    if (err) {
+      return cb(err);
+    }
+
+    events = body.events.map((event) => {
+      return {
+        id: event.id,
+        name: event.name.text,
+        url: event.url,
+        description: event.description,
+        start: event.start.local,
+        end: event.end.local,
+        currency: event.currency,
+        venue_id: event.venue_id
+      };
+    });
+
+    return cb(null, events);
+  });
+}
+
+function getVenuesApi(url, event, cb) {
+  return request.get(getOptions(url), (err, res, body) => {
+    if (err) {
+      return cb(err);
+    }
+
+    event.venue = {
+      name: body.name,
+      address_1: body.address.address_1,
+      address_2: body.address.address_2,
+      city: body.address.city,
+      region: body.address.region,
+      postal_code: body.address.postal_code
+    };
+
+    cb(null, event.venue);
   });
 }
 
